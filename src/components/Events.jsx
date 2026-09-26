@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import videoe1 from "../Landing_media/satellitevid.mp4";
@@ -17,6 +16,7 @@ import launch_png from "../Landing_media/offlaunch.jpeg";
 import launch_vid from "../Landing_media/launchvid.mp4";
 import useLenis from "../utils/lenis";
 import Footer from "./footer";
+import TimelineItem from "./TimelineItem";
 
 const Events = () => {
   const [filterType, setFilterType] = useState("all");
@@ -31,8 +31,6 @@ const Events = () => {
   // Transform scroll progress to height percentage
   const heightProgress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
   
-  useLenis();
-
   useLenis();
 
   const filterEvents = (type) => setFilterType(type);
@@ -496,71 +494,16 @@ const Events = () => {
               />
             </div>
 
-            {timelineData.map((event, index) => {
-              // Calculate when each item should appear based on scroll progress
-              const itemOffset = index / (timelineData.length - 1);
-              const itemProgress = useTransform(
-                scrollYProgress,
-                [Math.max(0, itemOffset - 0.15), Math.min(1, itemOffset + 0.05)],
-                [0, 1]
-              );
-              
-              return (
-                <motion.div
+            {timelineData.map((event, index) => (
+                <TimelineItem
                   key={index}
-                  style={{
-                    opacity: itemProgress,
-                  }}
-                  className={`timeline-item ${index % 2 === 0 ? 'reverse' : ''}`}
-                >
-                {/* Timeline dot with scale animation */}
-                <motion.div
-                  style={{
-                    scale: itemProgress,
-                  }}
-                  className={`timeline-dot ${event.status === 'upcoming' ? 'pulse' : ''}`}
-                >
-                  {event.status === 'upcoming' && (
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.3, 1],
-                        opacity: [0.7, 1, 0.7],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                      className="absolute inset-0 rounded-full bg-blue-400"
-                    />
-                  )}
-                </motion.div>
-
-                {/* Content card */}
-                <motion.div
-                  style={{
-                    opacity: itemProgress,
-                    x: index % 2 === 0 ? useTransform(itemProgress, [0, 1], [50, 0]) : useTransform(itemProgress, [0, 1], [-50, 0])
-                  }}
-                  className={`timeline-content ${index % 2 === 0 ? 'reverse' : 'normal'}`}
-                >
-                  <div className="timeline-card">
-                    <div className={`timeline-card-inner ${index % 2 === 0 ? 'reverse' : ''}`}>
-                      <span className={`timeline-badge ${event.status === 'completed' ? 'completed' : 'upcoming'}`}>
-                        {event.category} • {event.status === 'completed' ? 'Completed' : 'Upcoming'}
-                      </span>
-                      <h3 className="timeline-event-title">{event.title}</h3>
-                      <p className="timeline-event-date">{event.date}</p>
-                      <p className="timeline-event-description">{event.description}</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Spacer for desktop */}
-                <div className="timeline-spacer"></div>
-              </motion.div>
-              );
-            })}
+                  event={event}
+                  index={index}
+                  totalItems={timelineData.length}
+                  scrollYProgress={scrollYProgress}
+                  isReverse={index % 2 === 0}
+                />
+              ))}
           </div>
         </div>
       </section>
